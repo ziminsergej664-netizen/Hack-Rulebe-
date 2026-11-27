@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -45,11 +45,21 @@ jobs:
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Apply Rulebe modifications
         run: python3 apply_rulebe.py engine
+      - uses: gradle/actions/setup-gradle@v4
       - name: Build APK
         working-directory: engine/android/launcher
         run: |
           chmod +x gradlew
-          ./gradlew assembleStandardDebug --stacktrace
+          for attempt in 1 2 3; do
+            set +e
+            ./gradlew assembleStandardDebug --stacktrace --max-workers=2 --no-parallel 2>&1 | tee /tmp/rulebe-build.log
+            status=${PIPESTATUS[0]}
+            set -e
+            if [ "$status" -eq 0 ]; then exit 0; fi
+            if ! grep -qiE '429|Too Many Requests' /tmp/rulebe-build.log; then exit "$status"; fi
+            if [ "$attempt" -eq 3 ]; then exit "$status"; fi
+            sleep $((attempt * 120))
+          done
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
