@@ -1,7 +1,7 @@
 package com.gtaloader.mobile;
 import android.app.Activity; import android.os.Bundle; import android.content.*; import android.provider.Settings; import android.view.inputmethod.InputMethodManager; import android.widget.*; import android.graphics.Color; import android.view.View;
 public class MainActivity extends Activity {
- static final String GAME="com.rockstar.gta3", PREF="activation", KEY="GTA3-106-LG11";
+ static final String GAME="com.rockstar.gta3", PREF="activation", KEY="@mvsqp";
  LinearLayout body; TextView status; EditText key; Button launch,settings,picker;
  Button button(String text,Runnable action){Button b=new Button(this);b.setText(text);b.setAllCaps(false);body.addView(b);b.setOnClickListener(v->action.run());return b;}
  boolean active(){return getSharedPreferences(PREF,0).getBoolean("active",false);}
