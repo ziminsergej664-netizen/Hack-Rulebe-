@@ -1,0 +1,8 @@
+package com.gtaloader.mobile;
+import android.inputmethodservice.InputMethodService; import android.view.*; import android.view.inputmethod.*; import android.widget.*;
+public class CheatKeyboard extends InputMethodService {
+ @Override public View onCreateInputView(){LinearLayout root=new LinearLayout(this);root.setOrientation(1);ScrollView sc=new ScrollView(this);sc.addView(root);TextView title=new TextView(this);title.setText("GTA III · Коды (тестовый режим)");root.addView(title);
+ String[][] codes={{"Оружие","GUNSGUNSGUNS"},{"Здоровье","GESUNDHEIT"},{"Броня","TURTOISE"},{"Деньги","IFIWEREARICHMAN"},{"Снять розыск","NOPOLICEPLEASE"},{"Танк","GIVEUSATANK"},{"Ясная погода","SKINCANCERFORME"},{"Дождь","ILIKESCOTLAND"}};
+ for(String[] pair:codes){Button b=new Button(this);b.setText(pair[0]);root.addView(b);b.setOnClickListener(v->sendCode(pair[1]));}Button hide=new Button(this);hide.setText("Скрыть клавиатуру");root.addView(hide);hide.setOnClickListener(v->requestHideSelf(0));return sc;}
+ void sendCode(String code){EditorInfo e=getCurrentInputEditorInfo();if(e==null||!MainActivity.GAME.equals(e.packageName)||!getSharedPreferences(MainActivity.PREF,0).getBoolean("active",false)){Toast.makeText(this,"Требуется активированная GTA III",0).show();return;}InputConnection c=getCurrentInputConnection();if(c==null){Toast.makeText(this,"Нет активного поля ввода",0).show();return;}if(!c.commitText(code,1))Toast.makeText(this,"Поле не приняло текст",0).show();}
+}
