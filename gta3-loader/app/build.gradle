@@ -1,0 +1,2 @@
+plugins { id 'com.android.application' }
+android { namespace 'com.gtaloader.mobile'; compileSdk 35; defaultConfig { applicationId 'com.gtaloader.mobile'; minSdk 26; targetSdk 30; versionCode 1; versionName '1.0' } }
