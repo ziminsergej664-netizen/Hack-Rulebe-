@@ -46,6 +46,19 @@ jobs:
       - name: Apply Rulebe modifications
         run: python3 apply_rulebe.py engine
       - uses: gradle/actions/setup-gradle@v4
+      - name: Configure Maven Central mirror
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for p in Path("engine/android/launcher").rglob("*"):
+              if p.is_file() and p.name.endswith((".gradle", ".gradle.kts")):
+                  s=p.read_text()
+                  t=s.replace("mavenCentral()", 'maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2") }')
+                  t=t.replace("https://repo.maven.apache.org/maven2", "https://maven-central.storage-download.googleapis.com/maven2")
+                  if s!=t:
+                      p.write_text(t)
+                      print("Updated",p)
+          PY
       - name: Build APK
         working-directory: engine/android/launcher
         run: |
